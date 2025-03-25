@@ -1,47 +1,47 @@
-Feature: Validate LOB Hierarchy and Metric Details
 
-  Scenario: Verify each LOB loads the corresponding metric details
-    Given I navigate to the application
+Feature: Validate Metrics Loading for LOBs and Sub-LOBs
+
+  Scenario: Verify metrics details are displayed for each LOB and Sub-LOB
+    Given I open the application
     When I click on each LOB
-    Then I should see the corresponding metric details
+    Then I should see 5 metric details displayed
+    When I click on each Sub-LOB under the LOB
+    Then I should see 5 metric details displayed for the Sub-LOB
 
-  Scenario: Verify each LOB contains sub-LOBs
-    Given I navigate to the application
-    When I expand each LOB
-    Then I should see the list of sub-LOBs
+
 import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
 
-Given("I navigate to the application", () => {
-  cy.visit("your-application-url"); // Replace with the actual URL
+Given("I open the application", () => {
+  cy.visit("/"); // Replace with the actual URL of your application
 });
 
 When("I click on each LOB", () => {
-  cy.get("ul > li").each(($lob, index) => {
-    cy.wrap($lob).click();
-    cy.wait(1000); // Wait for metric details to load (replace with proper assertion)
-
-    // Verify that metric details change dynamically
-    cy.get(".metric-container") // Adjust the selector based on the actual metric container
-      .should("be.visible")
-      .and("contain.text", `Expected Metric for LOB ${index + 1}`); // Adjust based on dynamic data
-  });
+  cy.get(".lob-item") // Replace with actual selector for LOB elements
+    .each(($lob) => {
+      cy.wrap($lob).click();
+      cy.wait(1000); // Wait for the metrics to load
+    });
 });
 
-Then("I should see the corresponding metric details", () => {
-  cy.get(".metric-container").should("be.visible");
+Then("I should see 5 metric details displayed", () => {
+  cy.get(".metric-container") // Replace with actual selector for metrics
+    .should("have.length", 5);
 });
 
-When("I expand each LOB", () => {
-  cy.get("ul > li").each(($lob) => {
-    cy.wrap($lob).click();
-    cy.wait(500); // Small wait for sub-LOBs to load
-  });
+When("I click on each Sub-LOB under the LOB", () => {
+  cy.get(".lob-item") // Select each LOB
+    .each(($lob) => {
+      cy.wrap($lob).click();
+      cy.wait(1000);
+
+      cy.get(".sub-lob-item") // Select each Sub-LOB within the LOB
+        .each(($subLob) => {
+          cy.wrap($subLob).click();
+          cy.wait(1000);
+        });
+    });
 });
 
-Then("I should see the list of sub-LOBs", () => {
-  cy.get("ul > li").each(($lob) => {
-    cy.wrap($lob)
-      .find("ul > li") // Sub-LOBs inside LOB
-      .should("have.length.greaterThan", 0); // Ensure sub-LOBs exist
-  });
+Then("I should see 5 metric details displayed for the Sub-LOB", () => {
+  cy.get(".metric-container").should("have.length", 5);
 });
