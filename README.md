@@ -1,56 +1,63 @@
-Feature: Validate Metrics Loading for All Hierarchy Levels  
 
-  As a user  
-  I want to navigate through different LOBs, Sub-LOBs, Area Products, and Teams  
-  So that I can verify that metric details load correctly  
+Feature: Navigation through hierarchical structure
 
-  Scenario: Verify metrics load for all hierarchy levels  
-    Given I open the application  
-    When I recursively navigate through the entire hierarchy  
-    Then I should see metric details loaded at each level  
+  Scenario: User navigates through LOBs, Sub LOBs, Area Product Lines, and Teams
+    Given I open the application
+    When I click on the LOB "Finance"
+    Then I should see Sub LOBs loaded
+    And I should see metrics details loaded
 
+    When I click on the Sub LOB "Corporate Banking"
+    Then I should see Area Product Lines loaded
+    And I should see metrics details loaded
 
+    When I click on the Area Product Line "Risk Management"
+    Then I should see Teams loaded
+    And I should see metrics details loaded
 
-
+    When I click on the Team "Fraud Detection"
+    Then I should see metrics details loaded
 
 
 
 /// <reference types="cypress" />
 
+import { Given, When, Then } from "cypress-cucumber-preprocessor/steps";
+
 Given("I open the application", () => {
-  cy.visit("http://localhost:9900/#/agility-metrics"); // Adjust URL
+  cy.visit("/"); // Replace with the correct application URL if needed
 });
 
-When("I recursively navigate through the entire hierarchy", () => {
-  cy.get(".lob-selector").each(($lob, lobIndex) => {
-    cy.wrap($lob).click(); // Click LOB  
-    cy.wait(500); // Wait for sub-LOBs to load  
-
-    cy.get(".sub-lob-selector").each(($subLob, subLobIndex) => {
-      cy.wrap($subLob).click(); // Click Sub-LOB  
-      cy.wait(500); // Wait for Area Products to load  
-
-      cy.get(".area-product-selector").each(($areaProduct, areaProductIndex) => {
-        cy.wrap($areaProduct).click(); // Click Area Product  
-        cy.wait(500); // Wait for Teams to load  
-
-        cy.get(".team-selector").each(($team, teamIndex) => {
-          cy.wrap($team).click(); // Click Team  
-          cy.wait(500); // Wait for Metrics to load  
-
-          // Verify metrics are loading
-          cy.get(".metric-details")
-            .should("be.visible")
-            .and("not.be.empty");
-        });
-      });
-    });
-  });
+When("I click on the LOB {string}", (lobName: string) => {
+  cy.get("ul.lob-list li").contains(lobName).click();
 });
 
-Then("I should see metric details loaded at each level", () => {
-  cy.get(".metric-details").should("be.visible").and("not.be.empty");
+Then("I should see Sub LOBs loaded", () => {
+  cy.get("ul.sub-lob-list").should("be.visible");
 });
 
+Then("I should see metrics details loaded", () => {
+  cy.get(".metrics-container").should("be.visible"); // Adjust this selector based on your application
+});
+
+When("I click on the Sub LOB {string}", (subLobName: string) => {
+  cy.get("ul.sub-lob-list li").contains(subLobName).click();
+});
+
+Then("I should see Area Product Lines loaded", () => {
+  cy.get("ul.area-product-list").should("be.visible");
+});
+
+When("I click on the Area Product Line {string}", (areaProductName: string) => {
+  cy.get("ul.area-product-list li").contains(areaProductName).click();
+});
+
+Then("I should see Teams loaded", () => {
+  cy.get("ul.team-list").should("be.visible");
+});
+
+When("I click on the Team {string}", (teamName: string) => {
+  cy.get("ul.team-list li").contains(teamName).click();
+});
 
 
