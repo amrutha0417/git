@@ -1,63 +1,91 @@
 
-Feature: Navigation through hierarchical structure
+Feature: LOB Navigation and Metrics Verification
 
-  Scenario: User navigates through LOBs, Sub LOBs, Area Product Lines, and Teams
-    Given I open the application
-    When I click on the LOB "Finance"
-    Then I should see Sub LOBs loaded
-    And I should see metrics details loaded
+  Scenario: Navigate to LOB and verify metrics
+    Given The user is on the application homepage
+    When The user navigates to the "Consumer & Community Banking" LOB
+    Then The LOB page should load successfully
+    And The LOB metrics should be displayed
 
-    When I click on the Sub LOB "Corporate Banking"
-    Then I should see Area Product Lines loaded
-    And I should see metrics details loaded
+  Scenario: Navigate to a Product and verify metrics
+    Given The user is on the LOB page
+    When The user selects the "Field Performance Reporting & Insights" Product
+    Then The Product page should load successfully
+    And The Product metrics should be displayed
 
-    When I click on the Area Product Line "Risk Management"
-    Then I should see Teams loaded
-    And I should see metrics details loaded
+  Scenario: Navigate to an Area Product and verify metrics
+    Given The user is on the Product page
+    When The user selects the "BB FPR&I" Area Product
+    Then The Area Product page should load successfully
+    And The Area Product metrics should be displayed
 
-    When I click on the Team "Fraud Detection"
-    Then I should see metrics details loaded
+  Scenario: Verify error handling for failed metrics
+    Given The user is on any page
+    When Metrics fail to load
+    Then An appropriate error message should be displayed
 
 
+import { Given, When, Then } from 'cypress-cucumber-preprocessor/steps';
 
-/// <reference types="cypress" />
-
-import { Given, When, Then } from "cypress-cucumber-preprocessor/steps";
-
-Given("I open the application", () => {
-  cy.visit("/"); // Replace with the correct application URL if needed
+Given('The user is on the application homepage', () => {
+  cy.visit('http://localhost:9900/agility-metrics/product-groups/lobs'); // Update with actual URL
+  cy.wait(2000);
 });
 
-When("I click on the LOB {string}", (lobName: string) => {
-  cy.get("ul.lob-list li").contains(lobName).click();
+When('The user navigates to the {string} LOB', (lobName) => {
+  cy.contains(lobName).click();
+  cy.wait(2000);
 });
 
-Then("I should see Sub LOBs loaded", () => {
-  cy.get("ul.sub-lob-list").should("be.visible");
+Then('The LOB page should load successfully', () => {
+  cy.url().should('include', '/overview');
+  cy.get('.metric-container').should('be.visible'); // Ensure metrics section is visible
 });
 
-Then("I should see metrics details loaded", () => {
-  cy.get(".metrics-container").should("be.visible"); // Adjust this selector based on your application
+Then('The LOB metrics should be displayed', () => {
+  cy.get('.metric-card').each(($el) => {
+    cy.wrap($el).should('be.visible');
+  });
 });
 
-When("I click on the Sub LOB {string}", (subLobName: string) => {
-  cy.get("ul.sub-lob-list li").contains(subLobName).click();
+When('The user selects the {string} Product', (productName) => {
+  cy.contains(productName).click();
+  cy.wait(2000);
 });
 
-Then("I should see Area Product Lines loaded", () => {
-  cy.get("ul.area-product-list").should("be.visible");
+Then('The Product page should load successfully', () => {
+  cy.url().should('include', '/product-overview');
+  cy.get('.metric-container').should('be.visible');
 });
 
-When("I click on the Area Product Line {string}", (areaProductName: string) => {
-  cy.get("ul.area-product-list li").contains(areaProductName).click();
+Then('The Product metrics should be displayed', () => {
+  cy.get('.metric-card').each(($el) => {
+    cy.wrap($el).should('be.visible');
+  });
 });
 
-Then("I should see Teams loaded", () => {
-  cy.get("ul.team-list").should("be.visible");
+When('The user selects the {string} Area Product', (areaProductName) => {
+  cy.contains(areaProductName).click();
+  cy.wait(2000);
 });
 
-When("I click on the Team {string}", (teamName: string) => {
-  cy.get("ul.team-list li").contains(teamName).click();
+Then('The Area Product page should load successfully', () => {
+  cy.url().should('include', '/team-overview');
+  cy.get('.metric-container').should('be.visible');
 });
 
+Then('The Area Product metrics should be displayed', () => {
+  cy.get('.metric-card').each(($el) => {
+    cy.wrap($el).should('be.visible');
+  });
+});
+
+When('Metrics fail to load', () => {
+  cy.intercept('GET', '**/metrics', { statusCode: 500 }).as('metricsFail');
+  cy.wait('@metricsFail');
+});
+
+Then('An appropriate error message should be displayed', () => {
+  cy.get('.error-message').should('contain', 'Failed to load metrics');
+});
 
