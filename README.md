@@ -89,3 +89,75 @@ Then('An appropriate error message should be displayed', () => {
   cy.get('.error-message').should('contain', 'Failed to load metrics');
 });
 
+Feature: LOB Navigation and Metrics Verification
+
+  Scenario: Navigate through LOB structure and verify metrics
+    Given the user is on the landing page
+    When the user navigates to the "LOB" page
+    Then the "LOB" page should load successfully
+    And metrics relevant to "LOB" should be displayed
+
+    When the user selects and navigates to a "Product" page
+    Then the "Product" page should load successfully
+    And metrics relevant to "Product" should be displayed
+
+    When the user selects and navigates to an "Area Product" or "Team" page
+    Then the "Area Product/Team" page should load successfully
+    And metrics relevant to "Area Product/Team" should be displayed
+
+  Scenario: Verify metrics visibility and correctness
+    Given the user is on any metrics page
+    Then all metrics should be visible and not hidden
+    And each metric should have a label and value
+
+  Scenario: Handle metric load failures
+    Given the user is on any metrics page
+    When metrics fail to load
+    Then an appropriate error message should be displayed
+
+
+import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
+
+Given("the user is on the landing page", () => {
+  cy.visit("/");
+});
+
+When("the user navigates to the {string} page", (page) => {
+  cy.contains(page).click();
+});
+
+Then("the {string} page should load successfully", (page) => {
+  cy.url().should("include", page.toLowerCase());
+  cy.get("h1").should("contain.text", page);
+});
+
+Then("metrics relevant to {string} should be displayed", (page) => {
+  cy.get(".metrics").should("be.visible");
+  cy.get(".metric-item").each(($metric) => {
+    cy.wrap($metric).should("contain.text", ":");
+  });
+});
+
+Given("the user is on any metrics page", () => {
+  cy.get(".metrics").should("exist");
+});
+
+Then("all metrics should be visible and not hidden", () => {
+  cy.get(".metric-item").should("be.visible");
+});
+
+Then("each metric should have a label and value", () => {
+  cy.get(".metric-item").each(($metric) => {
+    cy.wrap($metric).find(".label").should("not.be.empty");
+    cy.wrap($metric).find(".value").should("not.be.empty");
+  });
+});
+
+When("metrics fail to load", () => {
+  cy.intercept("GET", "/api/metrics", { statusCode: 500 }).as("metricsFail");
+  cy.reload();
+});
+
+Then("an appropriate error message should be displayed", () => {
+  cy.get(".error-message").should("be.visible").and("contain.text", "failed to load");
+});
