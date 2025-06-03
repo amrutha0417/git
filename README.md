@@ -1,3 +1,27 @@
+Feature: Search in left navigation
+
+  Background:
+    Given I am on the dashboard page
+
+  Scenario Outline: Search for different entities and verify relevant level is displayed
+    When I search for "<searchItem>" in the left navigation
+    Then I should see the "<entity>" level displayed
+
+    Examples:
+      | entity             | searchItem         |
+      | Product            | Auto               |
+      | Product            | Business Banking   |
+      | Product            | Finance            |
+      | Product            | Risk               |
+      | Product Owner      | John Doe           |
+      | Area Product       | Retail Experience  |
+      | Area Product Owner | Jane Smith         |
+      | Team               | Fraud Team         |
+      | Agile Lead         | Michael Johnson    |
+
+
+
+
 
 Feature: Search in left navigation
 
