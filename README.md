@@ -1,4 +1,33 @@
 
+Feature: Search in left navigation
+
+  Background:
+    Given I am on the dashboard page
+
+  Scenario Outline: Search for an entity and verify the relevant level is displayed
+    When I search for "<entity>" in the left navigation
+    Then I should see the "<expectedSection>" level displayed
+
+    Examples:
+      | entity              | expectedSection          |
+      | Auto                | Auto                     |
+      | Business Banking    | Business Banking         |
+      | Finance             | Finance                  |
+      | Risk                | Risk                     |
+      | John Doe            | Product Owner            |
+      | Payments            | Product                  |
+      | Retail Experience   | Area Product             |
+      | Jane Smith          | Area Product Owner       |
+      | Fraud Team          | Team                     |
+      | Michael Johnson     | Agile Lead               |
+
+
+
+
+
+
+
+
 Feature: Navigation and Metrics Verification in LOB Application
 
   As a user,
