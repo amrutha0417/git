@@ -1,1 +1,46 @@
-Line One
+Feature: Navigate to Health Overview from Metric Detail Pages at Various Aggregate Levels
+
+Scenario Outline: Navigate to Health Overview from Metric's Detail Page at LOB level
+  Given I am on the metric's detail page with LOB "<lob>"
+  When I click on "Health Overview"
+  Then I should be navigated to the Health Overview page of the LOB level
+
+  Examples:
+    | lob                          |
+    | Consumer & Community Banking |
+
+Scenario Outline: Navigate to Health Overview from Metric's Detail Page at Product Line level
+  Given I am on the metric's detail page with LOB "<lob>" and Product Line "<product-line>"
+  When I click on "Health Overview"
+  Then I should be navigated to the Health Overview page of the Product Line level
+
+  Examples:
+    | lob                          | product-line                  |
+    | Consumer & Community Banking | J.P. Morgan Wealth Management |
+
+Scenario Outline: Navigate to Health Overview from Metric's Detail Page at Product level
+  Given I am on the metric's detail page with LOB "<lob>", Product Line "<product-line>", and Product "<product>"
+  When I click on "Health Overview"
+  Then I should be navigated to the Health Overview page of the Product level
+
+  Examples:
+    | lob                          | product-line                  | product                |
+    | Consumer & Community Banking | J.P. Morgan Wealth Management | Annuities & Insurance |
+
+Scenario Outline: Navigate to Health Overview from Metric's Detail Page at Area Product level
+  Given I am on the metric's detail page with LOB "<lob>", Product Line "<product-line>", Product "<product>", and Area Product "<area-product>"
+  When I click on "Health Overview"
+  Then I should be navigated to the Health Overview page of the Area Product level
+
+  Examples:
+    | lob                          | product-line                  | product                | area-product   |
+    | Consumer & Community Banking | J.P. Morgan Wealth Management | Annuities & Insurance | Life Insurance |
+
+Scenario Outline: Navigate to Health Overview from Metric's Detail Page at Team level
+  Given I am on the metric's detail page with LOB "<lob>", Product Line "<product-line>", Product "<product>", Area Product "<area-product>", and Team "<team>"
+  When I click on "Health Overview"
+  Then I should be navigated to the Health Overview page of the Team level
+
+  Examples:
+    | lob                          | product-line                  | product                | area-product   | team              |
+    | Consumer & Community Banking | J.P. Morgan Wealth Management | Annuities & Insurance | Life Insurance | Lord of Sprints   |
